@@ -125,7 +125,6 @@ void accionesProcesos(int* cantidadHijos, struct elementoHistograma* histograma)
         }
         else if(pid == 0) //Fork funciona correctamente
         {
-            sleep(1);
             promedio = (getpid() + getppid()) / 2; //Promedio entre pid de hijo y de apdre
             printf("Soy el proceso hijo con PID %d, con PPID %d y mi promedio es = %d.\n", getpid(), getppid() ,promedio);
             escribirPromedio(aux->tuberia, promedio); //Se escribe en Pipe para pasar promedio a proceso padre
