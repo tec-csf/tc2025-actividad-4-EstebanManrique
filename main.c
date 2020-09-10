@@ -137,9 +137,9 @@ void accionesProcesos(int* cantidadHijos, struct elementoHistograma* histograma)
     for(int i = 0; i<*(cantidadHijos);i++) //Proceso padre va acabando a los procesos hijos
     {
         int estado;
-        aux->promedio = leerPromedio(aux->tuberia);
         if (waitpid(aux->pidHijo, &estado, 0) != -1) //Si padre esta esperando a hijo
         {
+            aux->promedio = leerPromedio(aux->tuberia);
             if(aux->promedio>promedioMasAlto)
             {
                 promedioMasAlto = aux->promedio; //Sirve para escala a la hora de imprimir asteriscos en el histograma.
