@@ -17,6 +17,7 @@ struct elementoHistograma //Estructura utilziada para almacenar los elementos a 
 {
     int pidHijo;
     int promedio;
+    int tuberia[2]; //Tuberia para comunicacion entre procesos
 };
 
 void numeroProcesos(int*, int, char* const*);
@@ -112,8 +113,7 @@ void accionesProcesos(int* cantidadHijos, struct elementoHistograma* histograma)
     for(int i = 0; i<*(cantidadHijos);i++) //Ciclo que crea numero de procesos hijos determinado por usuario
     {
         int promedio;
-        int tuberia[2]; //Arreglo para pipe
-        pipe(tuberia); //Se crea pipe para pasar entre procesos promedios que superen el valor de 255
+        pipe(aux->tuberia); //Se crea pipe para pasar entre procesos promedios que superen el valor de 255
         pid = fork(); //Generacion de procesos hijos
         aux->pidHijo = pid;
         if(pid == -1) //Falla de fork()
@@ -128,16 +128,17 @@ void accionesProcesos(int* cantidadHijos, struct elementoHistograma* histograma)
             sleep(1);
             promedio = (getpid() + getppid()) / 2; //Promedio entre pid de hijo y de apdre
             printf("Soy el proceso hijo con PID %d, con PPID %d y mi promedio es = %d.\n", getpid(), getppid() ,promedio);
-            escribirPromedio(tuberia, promedio); //Se escribe en Pipe para pasar promedio a proceso padre
+            escribirPromedio(aux->tuberia, promedio); //Se escribe en Pipe para pasar promedio a proceso padre
+            sleep(1);
             exit(promedio);
         }  
-        aux->promedio = leerPromedio(tuberia);
         aux++;
     }
     aux = histograma;
     for(int i = 0; i<*(cantidadHijos);i++) //Proceso padre va acabando a los procesos hijos
     {
         int estado;
+        aux->promedio = leerPromedio(aux->tuberia);
         if (waitpid(aux->pidHijo, &estado, 0) != -1) //Si padre esta esperando a hijo
         {
             if(aux->promedio>promedioMasAlto)
